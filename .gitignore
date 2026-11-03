@@ -1,0 +1,19 @@
+# Credenciais e configuracoes pessoais
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+# Ambiente e temporarios Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+# IDE, sistema e logs locais
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
