@@ -1,4 +1,3 @@
-"""Testes offline: nao chamam a rede."""
 import unittest
 from unittest.mock import Mock, patch
 
