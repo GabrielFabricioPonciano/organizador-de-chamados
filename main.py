@@ -1,3 +1,5 @@
+import logging
+
 from dotenv import load_dotenv
 
 from llm_client import FalhaLLM, gerar_ficha
@@ -14,6 +16,8 @@ def apresentar_resultado(ficha, provedor):
 
 def main():
     load_dotenv()
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    logging.info("app_event=start")
     try:
         texto = validar_entrada(capturar_entrada())
         ficha, provedor = gerar_ficha(texto)
@@ -24,6 +28,8 @@ def main():
         print(f"Nao foi possivel concluir: {exc}")
     except (EOFError, KeyboardInterrupt):
         print("\nOperacao cancelada.")
+    finally:
+        logging.info("app_event=end")
 
 
 if __name__ == "__main__":
