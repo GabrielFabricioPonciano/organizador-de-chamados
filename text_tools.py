@@ -1,4 +1,3 @@
-"""Preparacao da entrada, prompt e tratamento basico da resposta."""
 
 SYSTEM_PROMPT = (
     "Organize o relato de suporte em portugues brasileiro. "

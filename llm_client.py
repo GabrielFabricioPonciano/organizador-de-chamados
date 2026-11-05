@@ -1,4 +1,3 @@
-"""Configuracao, chamada HTTP e failover entre institucional e NVIDIA."""
 import os
 from dataclasses import dataclass
 from urllib.parse import urlparse
@@ -24,14 +23,13 @@ class FalhaLLM(Exception):
 
 
 def configurar_provedores():
-    """Ordem obrigatoria: institucional, depois NVIDIA."""
     return [
         Provedor(
             "Institucional",
             os.getenv("INSTITUTIONAL_BASE_URL", "").strip(),
             os.getenv("INSTITUTIONAL_MODEL", "").strip(),
             os.getenv("INSTITUTIONAL_API_KEY", "").strip(),
-            False,  # Alguns servicos institucionais permitem acesso sem chave.
+            False,
         ),
         Provedor(
             "NVIDIA",
@@ -44,7 +42,6 @@ def configurar_provedores():
 
 
 def _endpoint(provedor):
-    """Exige HTTPS, exceto servidor local de desenvolvimento."""
     url = provedor.base_url.rstrip("/")
     parsed = urlparse(url)
     local = parsed.hostname in {"localhost", "127.0.0.1"}
@@ -65,7 +62,6 @@ def chamar_modelo(provedor, mensagens):
     if provedor.chave:
         headers["Authorization"] = f"Bearer {provedor.chave}"
     corpo = {"model": provedor.modelo, "messages": mensagens, "max_tokens": 1024, "stream": False}
-    # Configuracao exclusiva do Nano Omni; outros modelos mantem o formato generico.
     if provedor.nome == "NVIDIA" and provedor.modelo == "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning":
         corpo["chat_template_kwargs"] = {"enable_thinking": False}
         corpo["top_k"] = 1
@@ -109,7 +105,6 @@ def gerar_ficha(texto, provedores=None):
         try:
             return chamar_modelo(provedor, mensagens), provedor.nome
         except FalhaLLM as exc:
-            # Apenas categorias de erros; nao armazena mensagem do usuario nem segredo.
             erros.append(f"{provedor.nome}: {descricoes.get(exc.categoria, 'falha desconhecida')}")
     detalhes = "; ".join(erros) if erros else "nenhum provedor configurado"
     raise FalhaLLM("todos_falharam", f"Nao foi possivel consultar o LLM. {detalhes}. Confira o arquivo .env e a conexao.")

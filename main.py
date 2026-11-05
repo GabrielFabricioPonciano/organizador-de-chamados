@@ -1,4 +1,3 @@
-"""Interface de terminal do P0 - etapa Intermediaria."""
 from dotenv import load_dotenv
 
 from llm_client import FalhaLLM, gerar_ficha
