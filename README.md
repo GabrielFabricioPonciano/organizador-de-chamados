@@ -23,6 +23,6 @@ A aplicacao nao realiza diagnosticos automaticos nem executa correcoes nos equip
 
 O projeto sera desenvolvido progressivamente, com validacao de cada etapa antes da integracao na branch principal.
 
-## Privacidade
+## Privacidade e segurança
 
-Nao utilize relatos contendo dados pessoais reais nos testes publicos. Credenciais devem ser armazenadas localmente, fora do controle de versao.
+Os exemplos utilizados no projeto são fictícios. As credenciais de acesso ao modelo são mantidas em variáveis de ambiente e não são incluídas no repositório.
