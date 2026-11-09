@@ -1,12 +1,12 @@
 # Relatório de execução — Organizador de chamados
 
-Este relatório registra o desenvolvimento do P0. Os itens pendentes devem ser confirmados antes da entrega final.
+Este relatório documenta o desenvolvimento, as decisões e as validações do P0.
 
 ## Evolução
 
 - **Básico:** entrada pelo terminal, envio a uma API compatível com Chat Completions e retorno textual. Duas chamadas reais à NVIDIA foram apresentadas durante os testes. PR [#1](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/1) integrado; tag `p0-basico` publicada.
 - **Intermediário:** separação entre entrada (`main.py`), preparação (`text_tools.py`) e consulta (`llm_client.py`), erros controlados e testes offline. 14 testes passaram no computador de desenvolvimento; houve chamada real à NVIDIA. PR [#2](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/2) integrado; tag `p0-intermediario` publicada. Comentários redundantes foram retirados pelo PR [#3](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/3).
-- **Avançado:** parâmetros externos, logs técnicos e testes implementados. Foram aprovados 20 testes no ambiente original e 20 em um ambiente virtual novo. A chamada real à NVIDIA foi concluída com código de saída 0. Tag final pendente.
+- **Avançado:** configuracoes externas, logs e testes adicionais. Foram aprovados 20 testes offline, validado um clone independente e realizada consulta real com NVIDIA. PR #4 integrado e tag `p0-avancado` publicada.
 
 ## Decisões
 
@@ -62,15 +62,15 @@ Ao preparar o Intermediário, uma alteração do `README.md` já estava no *stag
 
 ## Reflexão final
 
-- **Principal aprendizado:** PENDENTE — escrever a partir da experiência com o projeto.
-- **Competência mais desenvolvida:** PENDENTE — escolher entre C01 e C04 e justificar.
-- **O que precisa melhorar:** PENDENTE — identificar uma melhoria concreta.
+- **Principal aprendizado:** A chamada ao modelo e apenas o inicio. Organizar o codigo, tratar falhas e testar em outro ambiente foram partes essenciais.
+- **Competência mais desenvolvida:** C04, pela instalacao e validacao do projeto em um clone independente do GitHub.
+- **O que precisa melhorar:** Avaliar com mais rigor a qualidade das fichas, pois o modelo ainda pode omitir informacoes relevantes.
 
 ## Entrega
 
 - **Repositório:** https://github.com/GabrielFabricioPonciano/organizador-de-chamados
-- **PRs integrados:** #1, #2 e #3.
-- **Tags publicadas:** `p0-basico`, `p0-intermediario`.
-- **Tag final:** `p0-avancado` — PENDENTE.
-- **Vídeo:** PENDENTE.
-- **Ambiente limpo:** ambiente virtual novo criado no computador de desenvolvimento; instalação e 20 testes concluídos.
+- **PRs integrados:** #1, #2, #3 e #4.
+- **Tags publicadas:** `p0-basico`, `p0-intermediario` e `p0-avancado`.
+- **Tag final:** `p0-avancado`, publicada.
+- **Vídeo:** https://youtu.be/teuFhgPCauc
+- **Ambiente limpo:** ambiente virtual novo e clone independente do GitHub validados com 20 testes aprovados.

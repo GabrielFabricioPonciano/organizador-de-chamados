@@ -76,8 +76,8 @@ Por causa do fallback, uma mesma mensagem pode ser enviada aos dois provedores s
 
 - Básico: entrada pelo terminal e chamada à API — tag `p0-basico`.
 - Intermediário: organização, erros e testes — tag `p0-intermediario`.
-- Avançado: configuração externa, logs e validação de ambiente limpo — tag `p0-avancado` após a conclusão.
+- Avançado: configuracao externa, logs e validacao independente — tag `p0-avancado` publicada.
 
 As decisões e os resultados observados estão em [`RELATORIO_EXECUCAO.md`](RELATORIO_EXECUCAO.md).
 
-**Vídeo de demonstração:** PENDENTE — inserir link antes da entrega final.
+**Vídeo de demonstração:** https://youtu.be/teuFhgPCauc
