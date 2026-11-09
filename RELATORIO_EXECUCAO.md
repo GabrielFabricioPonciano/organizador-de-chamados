@@ -44,7 +44,7 @@ Data: 05/11/2026.
 - Código de saída: 0.
 - Os logs apresentados não exibiram credenciais nem o relato completo.
 - Nenhum problema encontrado na instalação do ambiente virtual novo.
-- Clone independente do GitHub: não realizado.
+- Clone independente do GitHub: realizado a partir da branch develop, com novo ambiente virtual Python 3.13, instalação das dependências pelo requirements.txt e 20 testes offline aprovados. Nenhuma credencial foi copiada para o clone.
 
 A ausência de configuração institucional acionou o fallback para NVIDIA.
 
