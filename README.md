@@ -1,83 +1,151 @@
-# Organizador de chamados
+# Organizador de Chamados
 
-Aplicação Python que transforma mensagens de suporte técnico em fichas com categoria, problema, contexto e informações faltantes.
+Aplicação em Python que utiliza um modelo de linguagem (LLM) para organizar mensagens de suporte técnico em fichas com categoria, problema, contexto e informações faltantes.
 
-## Problema
+## Sobre o projeto
 
-Quem recebe solicitações de suporte precisa interpretar relatos informais, frequentemente incompletos. A aplicação organiza o texto para facilitar o registro inicial de um chamado.
+No atendimento de suporte, é comum receber mensagens incompletas ou pouco organizadas. Isso dificulta a identificação do problema e o registro do chamado.
 
-- **Público:** equipes pequenas de suporte e atendimento.
-- **Entrada:** texto digitado no terminal.
-- **Saída:** ficha textual organizada pelo modelo.
-- **Por que um LLM:** interpreta variações de linguagem que seriam difíceis de cobrir apenas com regras fixas.
+O Organizador de Chamados recebe uma mensagem digitada no terminal e utiliza um LLM para estruturar essas informações.
 
-A aplicação não faz diagnóstico ou correção de equipamentos, não armazena chamados e não garante que todas as informações geradas estejam corretas.
+- **Público:** equipes de suporte e atendimento.
+- **Entrada:** mensagem de texto.
+- **Saída:** ficha organizada com as informações do chamado.
+- **Uso do LLM:** interpretar relatos escritos de diferentes maneiras, sem depender apenas de palavras-chave.
+
+A aplicação não realiza diagnósticos, não corrige equipamentos e não armazena chamados.
+
+## Estrutura do projeto
+
+| Arquivo | Função |
+|---|---|
+| `main.py` | Executa a aplicação e recebe a mensagem. |
+| `llm_client.py` | Realiza a comunicação com o modelo. |
+| `text_tools.py` | Valida e organiza as informações. |
+| `tests/` | Contém os testes automatizados. |
+| `.env.example` | Exemplo das configurações necessárias. |
+| `requirements.txt` | Lista as dependências do projeto. |
+| `RELATORIO_EXECUCAO.md` | Documenta o desenvolvimento e os testes. |
 
 ## Requisitos
 
-Python 3.10 ou superior. Bibliotecas diretas: `requests` e `python-dotenv`, listadas em `requirements.txt`.
+- Python 3.10 ou superior.
+- Bibliotecas `requests` e `python-dotenv`.
+- Chave de API válida para executar consultas reais.
 
-Ambiente usado durante o desenvolvimento: Windows, Python 3.13.0, `requests` 2.34.2 e `python-dotenv` 1.2.4. Essas são as versões observadas nos testes locais anteriores; outras versões dentro das faixas declaradas podem funcionar.
+O projeto foi desenvolvido e testado no Windows com Python 3.13.0.
 
-## Instalação no Windows (PowerShell)
+## Instalação
 
-Clone este repositório e entre na pasta `organizador-de-chamados`. Depois execute:
+Abra o PowerShell e execute:
 
 ```powershell
+git clone https://github.com/GabrielFabricioPonciano/organizador-de-chamados.git
+cd organizador-de-chamados
+
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
 Copy-Item .env.example .env
 notepad .env
 ```
 
-No `.env`, preencha o endereço, o identificador do modelo e a chave de acesso do provedor que utilizar. **Não compartilhe nem publique esse arquivo.** O exemplo já inclui o endpoint e o nome do modelo NVIDIA; faltará sua própria chave de API.
+No arquivo `.env`, configure sua chave de API. O `.env.example` já apresenta as configurações necessárias para utilizar a NVIDIA.
 
-As variáveis `INSTITUTIONAL_*` são opcionais. O serviço institucional só pode ser usado se fornecer uma API compatível com Chat Completions; essa compatibilidade ainda não foi validada. Quando configurado, o programa tenta primeiro o institucional e, se ele falhar, tenta a NVIDIA.
+**Não publique o arquivo `.env`, pois ele contém informações de acesso.**
 
-Configurações ajustáveis sem editar o código:
+## Modelo utilizado
 
-| Variável | Padrão | Intervalo |
-|---|---:|---|
-| `LLM_TIMEOUT` | 30 | 5–180 segundos |
-| `LLM_MAX_TOKENS` | 1024 | 32–8192 |
-| `LLM_TEMPERATURE` | 0.2 | 0–1 |
+A NVIDIA foi o provedor utilizado nas execuções reais do projeto e apresentou os resultados esperados.
 
-Para executar:
+O projeto também permite configurar um serviço institucional compatível com a API Chat Completions. Quando configurado, o programa tenta utilizá-lo primeiro e pode recorrer à NVIDIA em caso de falha.
+
+Embora o serviço institucional esteja disponível atualmente, optei por continuar utilizando a NVIDIA, pois foi o provedor validado durante o desenvolvimento. A integração institucional não foi testada neste projeto.
+
+As principais configurações podem ser ajustadas no `.env`:
+
+| Configuração | Padrão |
+|---|---|
+| `LLM_TIMEOUT` | 30 segundos |
+| `LLM_MAX_TOKENS` | 1024 |
+| `LLM_TEMPERATURE` | 0.2 |
+
+## Como executar
+
+Com o ambiente configurado, execute:
 
 ```powershell
 .\.venv\Scripts\python.exe main.py
 ```
 
-**Exemplo fictício de entrada:** "O computador da recepção não consegue acessar a rede. Já reiniciei o equipamento."
+Exemplo de mensagem:
 
-**Exemplo de saída esperada:** categoria de rede, problema de conectividade, tentativa de reinicialização e informações a confirmar. A redação da resposta pode variar conforme o modelo.
+> A impressora do escritório não está imprimindo. Já reiniciei o equipamento, mas o problema continua.
+
+A aplicação deverá gerar uma ficha semelhante a esta:
+
+**Categoria:** Impressora
+
+**Problema:** Equipamento não está imprimindo.
+
+**Contexto:** O usuário já tentou reiniciar a impressora.
+
+**Informações faltantes:** Modelo da impressora, mensagens de erro e tipo de conexão.
+
+Esse é um exemplo ilustrativo. A resposta pode variar conforme o modelo.
 
 ## Testes
 
-Para executar os testes offline, sem gastar chamadas de API:
+Os testes automatizados podem ser executados sem utilizar uma chave de API:
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Esses testes usam respostas e erros **simulados**. Verificam validação, configuração, autenticação ausente/inválida, timeout, fallback, resposta inesperada, logs e parâmetros externos. Não substituem o teste real de integração.
+Eles verificam situações como:
 
-Para conferir a integração real, configure uma chave válida e execute `main.py` com uma mensagem fictícia. O terminal identifica o provedor que respondeu.
+- Entrada válida e entrada vazia.
+- Credenciais ausentes ou inválidas.
+- Falhas de comunicação e timeout.
+- Respostas inesperadas da API.
+- Configurações externas e funcionamento dos logs.
 
-## Privacidade e segurança
+Durante o desenvolvimento, foram aprovados **14 testes no Intermediário e 20 no Avançado**.
 
-Os exemplos utilizados no projeto são fictícios. As credenciais de acesso ao modelo são mantidas em variáveis de ambiente e não são incluídas no repositório.
+A versão Avançada também foi validada em um ambiente virtual novo e em um clone independente do GitHub, com os 20 testes aprovados.
 
-Os logs aparecem no terminal e indicam apenas início/fim, provedor e categoria de erro. Não armazenam prompts, respostas, chaves ou dados pessoais. O arquivo `.env` e os ambientes virtuais estão excluídos do controle de versão.
+Além dos testes simulados, foram realizadas chamadas reais à NVIDIA para verificar a geração das fichas.
 
-Por causa do fallback, uma mesma mensagem pode ser enviada aos dois provedores se o primeiro falhar. Evite dados pessoais e confidenciais. O enunciado do P0 menciona um único LLM; confirme com a coordenação a aceitação do fallback ou use apenas o provedor NVIDIA configurado durante a avaliação.
+## Segurança e limitações
 
-## Evolução e entrega
+As credenciais ficam em variáveis de ambiente e não são incluídas no repositório.
 
-- Básico: entrada pelo terminal e chamada à API — tag `p0-basico`.
-- Intermediário: organização, erros e testes — tag `p0-intermediario`.
-- Avançado: configuracao externa, logs e validacao independente — tag `p0-avancado` publicada.
+Os logs registram eventos e categorias de erros, sem armazenar as mensagens completas ou as chaves de API.
 
-As decisões e os resultados observados estão em [`RELATORIO_EXECUCAO.md`](RELATORIO_EXECUCAO.md).
+Como as mensagens podem ser enviadas a um provedor externo, não utilize dados pessoais ou informações confidenciais nos testes.
+
+O modelo pode interpretar alguma informação incorretamente ou deixar detalhes de fora. Por isso, as fichas devem ser conferidas antes de serem utilizadas.
+
+## Evolução do projeto
+
+O desenvolvimento foi dividido em três níveis:
+
+- **Básico — `p0-basico`:** aplicação inicial e integração com o LLM.
+- **Intermediário — `p0-intermediario`:** organização do código, tratamento de erros e testes.
+- **Avançado — `p0-avancado`:** configurações externas, logs e validação em ambiente independente.
+
+O histórico de commits e pull requests está disponível neste repositório.
+
+A tag `p0-entrega-final` identifica a versão com a documentação finalizada.
+
+## Relatório e vídeo
+
+O desenvolvimento, as decisões técnicas, os resultados dos testes e as reflexões estão documentados no [Relatório de Execução](RELATORIO_EXECUCAO.md).
 
 **Vídeo de demonstração:** https://youtu.be/teuFhgPCauc
+
+## Autor
+
+Gabriel Fabrício Ponciano
+
+Projeto desenvolvido para o P0 do curso SOFTEX TrendsIA.
