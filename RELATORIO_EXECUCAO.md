@@ -1,76 +1,62 @@
-# Relatório de execução — Organizador de chamados
+# Relatório de execução — Organizador de Chamados
 
-Este relatório documenta o desenvolvimento, as decisões e as validações do P0.
+## 1. Evolução do projeto
 
-## Evolução
+O projeto foi desenvolvido em três etapas:
 
-- **Básico:** entrada pelo terminal, envio a uma API compatível com Chat Completions e retorno textual. Duas chamadas reais à NVIDIA foram apresentadas durante os testes. PR [#1](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/1) integrado; tag `p0-basico` publicada.
-- **Intermediário:** separação entre entrada (`main.py`), preparação (`text_tools.py`) e consulta (`llm_client.py`), erros controlados e testes offline. 14 testes passaram no computador de desenvolvimento; houve chamada real à NVIDIA. PR [#2](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/2) integrado; tag `p0-intermediario` publicada. Comentários redundantes foram retirados pelo PR [#3](https://github.com/GabrielFabricioPonciano/organizador-de-chamados/pull/3).
-- **Avançado:** configuracoes externas, logs e testes adicionais. Foram aprovados 20 testes offline, validado um clone independente e realizada consulta real com NVIDIA. PR #4 integrado e tag `p0-avancado` publicada.
+- **Básico:** aplicação Python de terminal que recebe relatos de suporte e usa um LLM para organizá-los em fichas. A consulta à NVIDIA funcionou. Tag `p0-basico`.
+- **Intermediário:** separação das responsabilidades do código, tratamento de erros e testes offline. Foram aprovados 14 testes. Tag `p0-intermediario`.
+- **Avançado:** configurações externas, logs e testes adicionais. Foram aprovados 20 testes, inclusive em um ambiente virtual novo e em um clone independente do GitHub. Tag `p0-avancado`.
 
-## Decisões
+A evolução foi registrada em commits e pull requests no GitHub.
 
-| Decisão | Alternativa | Justificativa |
+## 2. Decisões técnicas
+
+| Decisão | Alternativa | Motivo |
 |---|---|---|
-| Interface de terminal | Aplicação web | Atende ao problema sem criar infraestrutura adicional. |
-| `requests` para a API | Framework de agentes | O fluxo exige uma consulta textual simples. |
-| NVIDIA como alternativa ao institucional | Aguardar a liberação institucional | Permite executar o P0; a aceitação acadêmica do fallback entre provedores precisa ser confirmada. |
-| Testes simulados com `unittest` | Testes sempre online | Permite verificar falhas sem custo ou dependência de rede. |
-| Logs de eventos e categorias | Armazenar mensagens completas | Evita registrar conteúdo potencialmente sensível. |
+| Manter a NVIDIA como provedor utilizado nos testes reais | Usar o serviço institucional | A NVIDIA já havia sido utilizada e validada durante o desenvolvimento. Mesmo com o serviço institucional atualmente disponível, preferi manter o provedor testado. |
+| Criar testes simulados com `unittest` | Depender apenas de chamadas reais à API | Permitiu verificar falhas sem depender da internet ou consumir chamadas. |
+| Registrar eventos e categorias de erro nos logs | Registrar mensagens e respostas completas | Reduziu a exposição de informações que poderiam ser sensíveis. |
+| Colocar parâmetros no `.env` | Deixar valores fixos no código | Permitiu ajustar as configurações sem editar os arquivos Python. |
 
-## Testes e resultados
+## 3. Testes e resultados
 
-| Teste | Entrada ou situação | Esperado | Obtido |
-|---|---|---|---|
-| Integração real — Básico | Mensagem fictícia de suporte | Ficha organizada | Resposta recebida da NVIDIA; verificado no terminal. |
-| Integração real — Intermediário | Mensagem fictícia sobre impressora | Ficha organizada | Resposta recebida da NVIDIA; informações de contexto incompletas. |
-| Testes offline — Intermediário | 14 cenários simulados | Todos passarem | 14/14 aprovados no computador de desenvolvimento. |
-| Testes offline — Avançado | 20 cenários simulados | Todos aprovados | 20/20 no ambiente original e 20/20 no novo ambiente virtual. |
-| Integração real — Avançado | Relato fictício de impressora | Ficha e logs técnicos | NVIDIA respondeu; reinicialização reconhecida; código de saída 0. |
-| Ambiente limpo | Novo ambiente virtual com dependências instaladas | Testes funcionando | Python 3.13.0, requests 2.34.2, python-dotenv 1.2.4; 20/20 testes aprovados. |
+| Teste | Resultado observado |
+|---|---|
+| Entrada válida | A NVIDIA gerou uma ficha organizada para um relato fictício. |
+| Entrada vazia | O envio foi impedido com uma mensagem de orientação. |
+| Credencial ausente ou inválida | Tratamento confirmado nos testes simulados. |
+| Falha de comunicação | Tratamento confirmado nos testes simulados. |
+| Testes do Intermediário | 14/14 aprovados. |
+| Testes do Avançado | 20/20 aprovados. |
+| Ambiente virtual novo | Dependências instaladas e 20 testes aprovados. |
+| Clone independente do GitHub | Instalação realizada e 20 testes aprovados. |
 
-## Validação local do Avançado
+A consulta real do Avançado utilizou um relato fictício sobre uma impressora. O modelo organizou a mensagem e reconheceu que o equipamento já havia sido reiniciado.
 
-Data: 05/11/2026.
+Ambiente de validação: Python 3.13.0, `requests` 2.34.2 e `python-dotenv` 1.2.4.
 
-- Ambiente original: 20 testes offline aprovados.
-- Novo ambiente virtual: instalação concluída e 20 testes aprovados.
-- Python: 3.13.0.
-- requests: 2.34.2.
-- python-dotenv: 1.2.4.
-- Consulta real: NVIDIA respondeu com uma ficha de impressora.
-- Contexto da reinicialização reconhecido na resposta.
-- Logs observados: início, falha institucional de configuração, sucesso NVIDIA e encerramento.
-- Código de saída: 0.
-- Os logs apresentados não exibiram credenciais nem o relato completo.
-- Nenhum problema encontrado na instalação do ambiente virtual novo.
-- Clone independente do GitHub: realizado a partir da branch develop, com novo ambiente virtual Python 3.13, instalação das dependências pelo requirements.txt e 20 testes offline aprovados. Nenhuma credencial foi copiada para o clone.
+## 4. Dificuldades e limitações
 
-A ausência de configuração institucional acionou o fallback para NVIDIA.
+No Intermediário, uma alteração do `README.md` já preparada no Git impediu temporariamente a integração. Identifiquei a diferença com `git diff --cached`, revisei as mudanças e resolvi o problema.
 
-## Dificuldade encontrada
+O LLM pode omitir informações ou produzir respostas imprecisas. Por isso, as fichas geradas precisam ser conferidas. O serviço institucional está disponível atualmente, mas sua integração não foi validada neste projeto; os testes reais documentados utilizaram a NVIDIA.
 
-Ao preparar o Intermediário, uma alteração do `README.md` já estava no *staging* e impediu a execução do script de integração. A diferença foi identificada com `git diff --cached`, revisada e registrada em um commit separado. Também foram encontrados comentários internos redundantes, removidos posteriormente sem modificar a lógica; os 14 testes continuaram passando.
+## 5. Uso de IA no desenvolvimento
 
-**Limitação:** as respostas de um LLM podem omitir contexto e não são validadas contra um esquema rígido. O serviço institucional ainda não foi testado neste projeto.
+Utilizei o ChatGPT como apoio na preparação do código, dos testes, dos comandos Git e da documentação. Executei os comandos e conferi os resultados por meio de testes locais, chamadas reais à API e revisão das alterações e dos pull requests.
 
-## Uso de IA no desenvolvimento
+## 6. Reflexão final
 
-| Ferramenta | Trabalho apoiado | Aproveitamento e revisão | Verificação |
-|---|---|---|---|
-| ChatGPT | Preparação do código, dos comandos de versionamento, dos testes e da documentação | Execução dos comandos pelo aluno, revisão dos diffs e retirada de comentários redundantes | Testes offline, chamadas reais à NVIDIA e pull requests integrados |
+O principal aprendizado foi que integrar um LLM é apenas uma parte do trabalho. Também é necessário organizar o código, tratar falhas e verificar se o projeto funciona em outro ambiente.
 
-## Reflexão final
+A competência mais desenvolvida foi a **C04**, principalmente pela instalação e validação em um clone independente do GitHub.
 
-- **Principal aprendizado:** A chamada ao modelo e apenas o inicio. Organizar o codigo, tratar falhas e testar em outro ambiente foram partes essenciais.
-- **Competência mais desenvolvida:** C04, pela instalacao e validacao do projeto em um clone independente do GitHub.
-- **O que precisa melhorar:** Avaliar com mais rigor a qualidade das fichas, pois o modelo ainda pode omitir informacoes relevantes.
+Como melhoria futura, seria importante avaliar a qualidade das fichas com mais mensagens variadas, sobretudo as incompletas ou ambíguas.
 
-## Entrega
+## 7. Entrega
 
 - **Repositório:** https://github.com/GabrielFabricioPonciano/organizador-de-chamados
-- **PRs integrados:** #1, #2, #3 e #4.
-- **Tags publicadas:** `p0-basico`, `p0-intermediario` e `p0-avancado`.
-- **Tag final:** `p0-avancado`, publicada.
-- **Vídeo:** https://youtu.be/teuFhgPCauc
-- **Ambiente limpo:** ambiente virtual novo e clone independente do GitHub validados com 20 testes aprovados.
+- **Tags dos níveis:** `p0-basico`, `p0-intermediario` e `p0-avancado`
+- **Versão com a documentação final:** `p0-entrega-final`
+- **Vídeo de demonstração:** https://youtu.be/teuFhgPCauc
